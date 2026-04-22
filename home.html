@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Chá de Bebê da Iris 🍼</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Josefin+Sans:wght@300;400;600&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="home.css">
+    <style>
+        /* Placeholder da foto da Iris */
+        .hero-img-placeholder {
+            position: absolute; inset: 0; z-index: 1;
+            border-radius: 50%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: radial-gradient(circle at 40% 35%, #2d5a3d, #1a3a2a);
+            transition: opacity 0.4s ease;
+        }
+        .hero-img-placeholder.hidden { opacity: 0; pointer-events: none; }
+        .placeholder-leaf { font-size: 3.5rem; animation: flutuar-folha 4s ease-in-out infinite; }
+        .placeholder-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic; font-size: 1.4rem; font-weight: 600;
+            color: rgba(232,201,106,0.6); letter-spacing: 2px; margin-top: 8px;
+        }
+        #iris-foto.loaded { display: block !important; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size:1.5rem;">🌿</span>
+                <span class="logo-text">Chá de Bebê da Iris</span>
+            </div>
+            <nav>
+                <button class="btn btn-admin" id="btnOpenLogin">
+                    <i class="bi bi-shield-lock me-1"></i> Admin
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container-fluid">
+
+        <!-- HERO / FOTO -->
+        <section class="hero-section">
+            <div class="container-content">
+                <div class="hero-card">
+                    <div class="hero-img-box position-relative">
+                        <img id="iris-foto" src="" alt="Foto da Iris" class="hero-img-real" style="display:none;">
+                        <div class="hero-img-placeholder" id="hero-placeholder">
+                            <span class="placeholder-leaf">🌿</span>
+                            <span class="placeholder-name">Iris</span>
+                        </div>
+                        <div class="hero-petals">
+                            <span class="petal petal-1">🍃</span>
+                            <span class="petal petal-2">🌿</span>
+                            <span class="petal petal-3">✨</span>
+                            <span class="petal petal-4">🍃</span>
+                        </div>
+                    </div>
+                    <div class="hero-nome">Iris</div>
+                    <div class="hero-subtitulo">🌿 Uma nova vida chegando à floresta 🌿</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONVITE -->
+        <section class="section-card">
+            <div class="container-content">
+                <div class="card-elegante">
+                    <div class="card-elegante-header" id="card1-header">
+                        <div class="ornament">✦ ✦ ✦</div>
+                        <h1 class="titulo-principal" id="card1-titulo">Chá de Fraldas</h1>
+                        <div class="ornament">✦ ✦ ✦</div>
+                    </div>
+                    <div class="card-elegante-body text-center">
+                        <h2 class="subtitulo" id="card1-subtitulo">Olá, bem-vindos ao nosso Chá de Fraldas!</h2>
+                        <div class="divisor-floral">
+                            <span>💗 Queridos amigos e familiares 💗</span>
+                        </div>
+                        <p class="texto-convite" id="card1-texto">
+                            Este site foi criado com muito amor para compartilhar com todos vocês cada momento dessa fase deliciosa que é a gestação do nosso bebê 👶🍼🧷
+                        </p>
+                        <p class="texto-convite">
+                            Não se esqueçam de visitar as outras áreas do site com mais informações do evento 🥳💋🎉🎂
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRESENTES -->
+        <section class="section-card">
+            <div class="container-content">
+                <div class="card-elegante">
+                    <div class="card-elegante-header" id="card2-header">
+                        <div class="ornament">✦ ✦ ✦</div>
+                        <h1 class="titulo-principal" id="card2-titulo">Lista de Presentes</h1>
+                        <div class="ornament">✦ ✦ ✦</div>
+                    </div>
+                    <div class="card-elegante-body">
+                        <p class="subtitulo text-center" id="card2-texto">Escolha um presente para nos agraciar! (Cada item tem estoque limitado)</p>
+                        <div id="grid-produtos-estoque">
+                            <!-- Gerado via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INFORMAÇÕES DO EVENTO -->
+        <section class="section-card">
+            <div class="container-content">
+                <div class="card-elegante">
+                    <div class="card-elegante-header" id="card3-header">
+                        <div class="ornament">✦ ✦ ✦</div>
+                        <h1 class="titulo-principal" id="card3-titulo">Informações do Evento</h1>
+                        <div class="ornament">✦ ✦ ✦</div>
+                    </div>
+                    <div class="card-elegante-body">
+                        <p class="subtitulo text-center" id="card3-texto">Saiba mais sobre o evento. Data, hora, local e mais.</p>
+                        <div class="info-grid mt-4">
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-calendar-heart"></i></div>
+                                <div class="info-content">
+                                    <span class="info-label">Data</span>
+                                    <span class="info-value" id="info-data">--</span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-clock"></i></div>
+                                <div class="info-content">
+                                    <span class="info-label">Horário</span>
+                                    <span class="info-value" id="info-hora">--</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="countdown-box">
+                            <p class="countdown-label">Contagem regressiva</p>
+                            <div class="countdown-grid" id="countdown">
+                                <div class="countdown-item">
+                                    <span class="countdown-num" id="dias">--</span>
+                                    <span class="countdown-unit">dias</span>
+                                </div>
+                                <div class="countdown-sep">:</div>
+                                <div class="countdown-item">
+                                    <span class="countdown-num" id="horas">--</span>
+                                    <span class="countdown-unit">horas</span>
+                                </div>
+                                <div class="countdown-sep">:</div>
+                                <div class="countdown-item">
+                                    <span class="countdown-num" id="minutos">--</span>
+                                    <span class="countdown-unit">min</span>
+                                </div>
+                                <div class="countdown-sep">:</div>
+                                <div class="countdown-item">
+                                    <span class="countdown-num" id="segundos">--</span>
+                                    <span class="countdown-unit">seg</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONFIRMAÇÃO DE PRESENÇA -->
+        <section class="section-presenca">
+            <div class="container-content">
+                <div class="card-elegante presenca-card">
+                    <div class="card-elegante-header presenca-header">
+                        <div class="presenca-header-flores">
+                            <span>🌿</span><span>✨</span><span>🍃</span><span>✨</span><span>🌿</span>
+                        </div>
+                        <div class="ornament">✦ ✦ ✦</div>
+                        <h1 class="titulo-principal">Confirmar Presença</h1>
+                        <div class="ornament">✦ ✦ ✦</div>
+                        <p class="presenca-header-sub">Mal podemos esperar para celebrar com você! 🌿</p>
+                    </div>
+
+                    <div class="card-elegante-body presenca-body">
+
+                        <!-- Presente selecionado (banner) -->
+                        <div id="produto-selecionado-banner" class="presente-banner" style="display:none">
+                            <span class="presente-banner-icon">🎁</span>
+                            <span id="produto-selecionado"></span>
+                            <button class="presente-banner-clear" onclick="window.limparPresente()" title="Remover seleção">✕</button>
+                        </div>
+
+                        <!-- Formulário em grid -->
+                        <div class="presenca-form-grid">
+
+                            <!-- Coluna esquerda: dados pessoais -->
+                            <div class="presenca-col">
+                                <div class="presenca-col-titulo">
+                                    <span class="presenca-col-icone">👤</span>
+                                    <span>Seus dados</span>
+                                </div>
+
+                                <div class="form-field-fancy">
+                                    <div class="form-field-icon"><i class="bi bi-person-fill"></i></div>
+                                    <div class="form-field-inner">
+                                        <label for="name">Nome e sobrenome</label>
+                                        <input type="text" id="name" name="name" placeholder="Como você prefere ser chamado?" autocomplete="name">
+                                    </div>
+                                </div>
+
+                                <div class="form-field-fancy">
+                                    <div class="form-field-icon"><i class="bi bi-envelope-fill"></i></div>
+                                    <div class="form-field-inner">
+                                        <label for="email">E-mail</label>
+                                        <input type="email" id="email" name="email" placeholder="seuemail@gmail.com" autocomplete="email">
+                                    </div>
+                                </div>
+
+                                <div class="form-field-fancy">
+                                    <div class="form-field-icon"><i class="bi bi-whatsapp"></i></div>
+                                    <div class="form-field-inner">
+                                        <label for="tel">WhatsApp</label>
+                                        <input type="tel" id="tel" name="tel" placeholder="(99) 99999-9999" autocomplete="tel">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Coluna direita: acompanhantes -->
+                            <div class="presenca-col">
+                                <div class="presenca-col-titulo">
+                                    <span class="presenca-col-icone">👨‍👩‍👧</span>
+                                    <span>Acompanhantes</span>
+                                </div>
+
+                                <div class="acomp-area" id="acompanhanteBox"></div>
+
+                                <button class="btn-add-acompanhante btnAdcAcompanhante">
+                                    <i class="bi bi-person-plus-fill me-2"></i> Adicionar acompanhante
+                                </button>
+
+                                <div class="acomp-dica">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Informe adultos e crianças que virão com você
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões de ação -->
+                        <div class="presenca-acoes">
+                            <button class="btn-presenca-nao btnNaoVai">
+                                <i class="bi bi-x-circle me-2"></i> Não poderei ir
+                            </button>
+                            <button class="btn-presenca-sim btnVai" onclick="confirmarPresenca()">
+                                <i class="bi bi-heart-fill me-2"></i> Confirmar presença!
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RODAPÉ -->
+        <footer class="site-footer-bottom">
+            <p class="footer-text">Feito com 💚 para o Chá de Bebê da Iris</p>
+        </footer>
+
+    </main>
+
+    <!-- MODAL DE LOGIN -->
+    <div id="loginModal" class="login-modal-overlay hidden">
+        <div class="login-modal-card">
+            <div class="login-modal-header">
+                <h3>Acesso Restrito</h3>
+                <p>Identifique-se para continuar</p>
+            </div>
+            <div class="login-modal-body">
+                <div class="form-field mb-3">
+                    <label class="form-label-custom">Usuário</label>
+                    <input type="text" id="adminEmail" class="input-custom" placeholder="Digite seu usuário">
+                </div>
+                <div class="form-field mb-4">
+                    <label class="form-label-custom">Senha</label>
+                    <input type="password" id="password" class="input-custom" placeholder="Digite sua senha">
+                </div>
+                <button class="btn btn-vai w-100" id="btnLoginConfirm">Entrar no Painel</button>
+                <button class="btn btn-link w-100 mt-2 text-muted" id="btnCloseLogin">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="home.js"></script>
+</body>
+</html>

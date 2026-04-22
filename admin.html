@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin — Chá de Bebê da Iris 🌿</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Josefin+Sans:wght@300;400;600&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* =============================================
+           FLORESTA ENCANTADA — VARIÁVEIS
+           ============================================= */
+        :root {
+            --verde-profundo:  #1a3a2a;
+            --verde-floresta:  #2d5a3d;
+            --verde-musgo:     #4a7c59;
+            --verde-folha:     #6aaa7a;
+            --verde-claro:     #a8d4b0;
+            --verde-menta:     #c8e6cc;
+            --verde-gelo:      #e8f5ea;
+            --dourado-escuro:  #8b6914;
+            --dourado:         #c49a2a;
+            --dourado-claro:   #e8c96a;
+            --dourado-brilho:  #f5e4a0;
+            --creme-floresta:  #f7f2e8;
+            --creme-escuro:    #ede4d0;
+            --rosa-cogumelo:   #d4836a;
+            --texto-escuro:    #1a2e1e;
+            --texto-medio:     #3d5c45;
+            --texto-claro:     #7a9a82;
+            --sombra:          rgba(26,58,42,0.18);
+            --font-titulo:     'Cormorant Garamond', Georgia, serif;
+            --font-corpo:      'Nunito', sans-serif;
+            --font-label:      'Josefin Sans', sans-serif;
+            --sidebar-w:       280px;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        /* ── BODY / BG ── */
+        body {
+            font-family: var(--font-corpo);
+            background-color: var(--verde-profundo);
+            color: var(--texto-escuro);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(106,170,122,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 80% 90%, rgba(45,90,61,0.25) 0%, transparent 55%),
+                radial-gradient(ellipse 100% 100% at 50% 50%, var(--verde-profundo) 0%, #0e2018 100%);
+            z-index: -2;
+        }
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                radial-gradient(circle 2px at 15% 25%, rgba(232,201,106,0.6) 0%, transparent 100%),
+                radial-gradient(circle 1px at 72% 18%, rgba(232,201,106,0.4) 0%, transparent 100%),
+                radial-gradient(circle 2px at 88% 60%, rgba(168,212,176,0.5) 0%, transparent 100%),
+                radial-gradient(circle 1px at 35% 75%, rgba(232,201,106,0.5) 0%, transparent 100%),
+                radial-gradient(circle 2px at 55% 40%, rgba(168,212,176,0.3) 0%, transparent 100%),
+                radial-gradient(circle 1px at 5%  85%, rgba(232,201,106,0.4) 0%, transparent 100%),
+                radial-gradient(circle 2px at 93% 32%, rgba(168,212,176,0.4) 0%, transparent 100%);
+            z-index: -1;
+            animation: vagalumes 8s ease-in-out infinite alternate;
+        }
+        @keyframes vagalumes {
+            0%   { opacity:0.4; transform:scale(1);    }
+            50%  { opacity:0.9; transform:scale(1.02); }
+            100% { opacity:0.5; transform:scale(0.99); }
+        }
+
+        /* ── TOPBAR (mobile) ── */
+        .topbar {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 56px;
+            background: linear-gradient(135deg, var(--verde-profundo), var(--verde-floresta));
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 200;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(232,201,106,0.25);
+        }
+        .topbar-title {
+            color: var(--dourado-claro);
+            font-family: var(--font-titulo);
+            font-size: 1.15rem;
+            font-weight: 700;
+            font-style: italic;
+        }
+        .btn-hamburger {
+            background: none;
+            border: none;
+            color: var(--dourado-claro);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .btn-hamburger:hover { background: rgba(232,201,106,0.15); }
+
+        /* ── OVERLAY ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 299;
+        }
+        .sidebar-overlay.show { display: block; }
+
+        /* ── SIDEBAR ── */
+        .admin-sidebar {
+            width: var(--sidebar-w);
+            background: linear-gradient(160deg, var(--verde-profundo) 0%, #112a1c 100%);
+            border-right: 1px solid rgba(232,201,106,0.2);
+            color: white;
+            padding: 36px 18px 24px;
+            position: fixed;
+            top: 0; left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 3px 0 20px rgba(0,0,0,0.35);
+            z-index: 300;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            font-family: var(--font-titulo);
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-style: italic;
+            text-align: center;
+            color: var(--dourado-claro);
+            margin-bottom: 8px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(232,201,106,0.2);
+            letter-spacing: 0.5px;
+        }
+        .sidebar-logo span {
+            display: block;
+            font-family: var(--font-label);
+            font-style: normal;
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--texto-claro);
+            margin-top: 4px;
+        }
+
+        .sidebar-close {
+            display: none;
+            position: absolute;
+            top: 14px; right: 14px;
+            background: none;
+            border: none;
+            color: var(--dourado-claro);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 20px;
+        }
+
+        .sidebar-section-label {
+            font-family: var(--font-label);
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--texto-claro);
+            padding: 0 12px;
+            margin: 14px 0 6px;
+            opacity: 0.7;
+        }
+
+        .sidebar-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(232,201,106,0.12);
+            color: var(--verde-claro);
+            padding: 13px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: var(--font-corpo);
+            font-size: 0.88rem;
+            transition: all 0.25s ease;
+            text-align: left;
+            width: 100%;
+            letter-spacing: 0.02em;
+        }
+        .sidebar-btn:hover {
+            background: rgba(232,201,106,0.1);
+            border-color: rgba(232,201,106,0.3);
+            color: var(--dourado-claro);
+            transform: translateX(4px);
+        }
+        .sidebar-btn.active {
+            background: linear-gradient(135deg, rgba(45,90,61,0.7), rgba(74,124,89,0.5));
+            border-color: rgba(232,201,106,0.4);
+            color: var(--dourado-claro);
+            transform: translateX(4px);
+        }
+
+        .sidebar-divider {
+            border-top: 1px solid rgba(232,201,106,0.15);
+            margin: 14px 0;
+        }
+
+        .sidebar-btn-danger {
+            background: rgba(212,131,106,0.1);
+            border-color: rgba(212,131,106,0.25);
+            color: #e8a090;
+        }
+        .sidebar-btn-danger:hover {
+            background: rgba(212,131,106,0.25);
+            color: #f5c0b0;
+            border-color: rgba(212,131,106,0.5);
+        }
+
+        /* ── CONTEÚDO ── */
+        .admin-content {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            padding: 40px 44px;
+        }
+
+        /* ── HEADER DO CONTEÚDO ── */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(232,201,106,0.2);
+        }
+        .admin-header-left h2 {
+            font-family: var(--font-titulo);
+            color: var(--dourado-claro);
+            font-size: 2rem;
+            font-style: italic;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .admin-header-left p {
+            font-family: var(--font-label);
+            font-size: 0.68rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--texto-claro);
+            margin-top: 2px;
+        }
+        .btn-logout {
+            background: rgba(212,131,106,0.15);
+            color: #e8a090;
+            border: 1.5px solid rgba(212,131,106,0.35);
+            padding: 10px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: var(--font-label);
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .btn-logout:hover {
+            background: rgba(212,131,106,0.3);
+            color: #f5c0b0;
+            transform: scale(1.04);
+        }
+
+        /* ── SEÇÕES ── */
+        .section-admin { display: none; }
+        .section-admin.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn {
+            from { opacity:0; transform:translateY(8px); }
+            to   { opacity:1; transform:translateY(0);   }
+        }
+
+        /* ── CARD ADMIN ── */
+        .card-admin {
+            background: var(--creme-floresta);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 1px 0 rgba(232,201,106,0.15) inset;
+            margin-bottom: 24px;
+            border: 1px solid rgba(232,201,106,0.15);
+        }
+        .card-admin h4 {
+            font-family: var(--font-titulo);
+            color: var(--verde-floresta);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 22px;
+            font-style: italic;
+        }
+
+        /* ── FORMULÁRIOS ── */
+        .form-group-admin { margin-bottom: 18px; }
+        .form-group-admin label {
+            font-family: var(--font-label);
+            font-weight: 600;
+            color: var(--texto-medio);
+            margin-bottom: 7px;
+            display: block;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .form-group-admin input,
+        .form-group-admin textarea,
+        .form-group-admin select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid rgba(74,124,89,0.25);
+            border-radius: 10px;
+            font-family: var(--font-corpo);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.25s;
+            background: white;
+            color: var(--texto-escuro);
+        }
+        .form-group-admin input:focus,
+        .form-group-admin textarea:focus,
+        .form-group-admin select:focus {
+            border-color: var(--verde-musgo);
+            box-shadow: 0 0 0 3px rgba(74,124,89,0.12);
+        }
+        .form-group-admin input[type="color"] {
+            padding: 4px 8px;
+            height: 46px;
+            cursor: pointer;
+        }
+
+        /* ── BOTÕES ── */
+        .btn-salvar {
+            background: linear-gradient(135deg, var(--verde-floresta), var(--verde-musgo));
+            color: var(--dourado-claro);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-family: var(--font-label);
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 8px;
+            margin-top: 4px;
+        }
+        .btn-salvar:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(45,90,61,0.45);
+            color: var(--dourado-brilho);
+        }
+
+        .btn-deletar {
+            background: rgba(212,131,106,0.15);
+            color: var(--rosa-cogumelo);
+            border: 1.5px solid rgba(212,131,106,0.35);
+            padding: 7px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.83rem;
+            font-family: var(--font-corpo);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-deletar:hover {
+            background: var(--rosa-cogumelo);
+            color: white;
+            border-color: var(--rosa-cogumelo);
+        }
+
+        /* ── PRODUTOS ── */
+        .produto-item {
+            background: var(--verde-gelo);
+            border: 1px solid rgba(74,124,89,0.18);
+            padding: 16px 20px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            transition: box-shadow 0.2s;
+        }
+        .produto-item:hover { box-shadow: 0 4px 14px var(--sombra); }
+        .produto-info { flex: 1; }
+        .produto-info h6 { margin: 0; color: var(--texto-escuro); font-weight: 700; font-size: 0.95rem; }
+        .produto-info small { color: var(--texto-claro); font-size: 0.82rem; }
+
+        /* ── CONVIDADOS ── */
+        .contador-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .contador-card {
+            background: linear-gradient(135deg, var(--verde-gelo), var(--verde-menta));
+            border: 1px solid rgba(74,124,89,0.2);
+            padding: 22px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .contador-card h6 {
+            font-family: var(--font-label);
+            color: var(--texto-claro);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 10px;
+        }
+        .contador-num {
+            font-family: var(--font-titulo);
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--verde-floresta);
+            line-height: 1;
+        }
+
+        .convidado-item {
+            background: var(--creme-escuro);
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--verde-musgo);
+            transition: transform 0.15s;
+        }
+        .convidado-item:hover { transform: translateX(3px); }
+        .convidado-item.confirmado {
+            background: var(--verde-gelo);
+            border-left-color: var(--verde-floresta);
+        }
+        .convidado-nome {
+            font-weight: 700;
+            color: var(--texto-escuro);
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+        .convidado-info { font-size: 0.83rem; color: var(--texto-medio); }
+
+        /* ── ALERTAS ── */
+        .alert-msg {
+            padding: 13px 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            display: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .alert-msg.show { display: block; animation: slideIn 0.3s ease; }
+        .alert-success {
+            background: var(--verde-menta);
+            color: var(--verde-floresta);
+            border-left: 4px solid var(--verde-musgo);
+        }
+        .alert-error {
+            background: #fde8e0;
+            color: #7a1a0a;
+            border-left: 4px solid var(--rosa-cogumelo);
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-14px); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+
+        /* ── ABAS DE CARDS ── */
+        .card-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+        .card-tab {
+            background: rgba(255,255,255,0.1);
+            border: 1.5px solid rgba(232,201,106,0.2);
+            color: var(--verde-claro);
+            padding: 10px 22px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: var(--font-label);
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            transition: all 0.25s;
+        }
+        .card-tab:hover {
+            border-color: rgba(232,201,106,0.5);
+            color: var(--dourado-claro);
+        }
+        .card-tab.active {
+            background: linear-gradient(135deg, var(--verde-floresta), var(--verde-musgo));
+            border-color: transparent;
+            color: var(--dourado-claro);
+        }
+        .card-tab-content { display: none; }
+        .card-tab-content.active { display: block; }
+
+        /* ── LAYOUT EDITOR + PREVIEW ── */
+        .card-editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        .card-editor-form { margin-bottom: 0; }
+
+        /* ── FORM EXTRAS ── */
+        .form-section-title {
+            font-family: var(--font-label);
+            font-weight: 700;
+            color: var(--verde-musgo);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin: 22px 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 1.5px solid rgba(74,124,89,0.2);
+        }
+        .form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .emoji-picker-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .emoji-sugestoes {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .emoji-sugestoes span {
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.15s;
+        }
+        .emoji-sugestoes span:hover {
+            border-color: var(--verde-musgo);
+            background: var(--verde-gelo);
+        }
+
+        /* ── PREVIEW ── */
+        .card-preview-wrapper {
+            position: sticky;
+            top: 20px;
+        }
+        .preview-label {
+            font-family: var(--font-label);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--texto-claro);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+        }
+        .card-preview {
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+            font-family: var(--font-corpo);
+            border: 1px solid rgba(232,201,106,0.15);
+        }
+        .preview-header {
+            padding: 22px 20px 18px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--verde-floresta) 0%, var(--verde-musgo) 100%);
+            color: var(--dourado-claro);
+            transition: background 0.3s;
+        }
+        .preview-ornamento {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            letter-spacing: 0.1em;
+            margin: 4px 0;
+        }
+        .preview-titulo {
+            font-family: var(--font-titulo);
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-style: italic;
+            margin: 6px 0;
+            line-height: 1.3;
+        }
+        .preview-body {
+            background: var(--creme-floresta);
+            padding: 20px;
+        }
+        .preview-subtitulo {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--texto-escuro);
+            margin-bottom: 10px;
+        }
+        .preview-divisor {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--verde-musgo);
+            padding: 8px 0;
+            border-top: 1px solid rgba(74,124,89,0.15);
+            border-bottom: 1px solid rgba(74,124,89,0.15);
+            margin: 10px 0;
+        }
+        .preview-texto {
+            color: var(--texto-medio);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .preview-texto2 {
+            color: var(--texto-claro);
+            font-size: 0.83rem;
+            line-height: 1.5;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* ── ORNAMENTOS DECORATIVOS ── */
+        .section-ornament {
+            font-family: var(--font-label);
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--dourado);
+            opacity: 0.6;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        /* ── DROPZONE IRIS ── */
+        .iris-dropzone {
+            border: 2px dashed rgba(74,124,89,0.4);
+            border-radius: 16px;
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: var(--verde-gelo);
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+        .iris-dropzone:hover,
+        .iris-dropzone.drag-over {
+            border-color: var(--verde-musgo);
+            background: var(--verde-menta);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74,124,89,0.15);
+        }
+        .dropzone-icon { font-size: 2.4rem; margin-bottom: 10px; }
+        .dropzone-title {
+            font-family: var(--font-corpo);
+            font-weight: 700;
+            color: var(--verde-floresta);
+            font-size: 0.95rem;
+            margin: 0 0 4px;
+        }
+        .dropzone-sub {
+            font-family: var(--font-label);
+            font-size: 0.68rem;
+            letter-spacing: 0.07em;
+            color: var(--texto-claro);
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        /* ── PREVIEW RING IRIS ── */
+        .iris-preview-ring {
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            border: 3px solid rgba(232,201,106,0.4);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.18), 0 0 0 6px rgba(232,201,106,0.1);
+            position: relative;
+            overflow: hidden;
+            background: var(--creme-escuro);
+        }
+        .iris-preview-placeholder {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: var(--verde-gelo);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .iris-preview-placeholder.hidden { opacity: 0; }
+
+        /* ── RESPONSIVO ── */
+        @media (max-width: 768px) {
+            .topbar { display: flex; }
+            .sidebar-close { display: block; }
+            .admin-sidebar {
+                transform: translateX(-100%);
+                top: 0;
+            }
+            .admin-sidebar.open { transform: translateX(0); }
+            .admin-content {
+                margin-left: 0;
+                padding: 80px 18px 32px;
+            }
+            .admin-header-left h2 { font-size: 1.5rem; }
+            .btn-logout { display: none; }
+            .card-admin { padding: 20px; }
+            .sidebar-btn:hover,
+            .sidebar-btn.active { transform: none; }
+            .card-editor-layout { grid-template-columns: 1fr; }
+            .card-preview-wrapper { position: static; }
+            .form-row-2col { grid-template-columns: 1fr; }
+        }
+
+        /* ── LISTA OFICIAL DE CONVIDADOS ── */
+        .lista-oficial-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--verde-gelo);
+            border: 1px solid rgba(74,124,89,0.18);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: box-shadow 0.2s;
+        }
+        .lista-oficial-item:hover { box-shadow: 0 3px 10px var(--sombra); }
+        .loi-nome {
+            font-family: var(--font-corpo);
+            color: var(--texto-escuro);
+            font-size: 0.93rem;
+            font-weight: 600;
+            flex: 1;
+        }
+        .loi-input-edit {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1.5px solid var(--verde-musgo);
+            border-radius: 8px;
+            font-family: var(--font-corpo);
+            font-size: 0.93rem;
+            outline: none;
+            color: var(--texto-escuro);
+        }
+        .loi-acoes { display: flex; gap: 6px; flex-shrink: 0; }
+        .loi-btn {
+            background: none;
+            border: 1.5px solid rgba(74,124,89,0.25);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .loi-editar:hover  { background: var(--verde-menta); border-color: var(--verde-musgo); }
+        .loi-excluir:hover { background: #fde8e0; border-color: var(--rosa-cogumelo); }
+        .loi-salvar:hover  { background: var(--verde-menta); border-color: var(--verde-musgo); }
+        .loi-cancelar:hover { background: #fde8e0; border-color: var(--rosa-cogumelo); }
+
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR MOBILE -->
+    <div class="topbar">
+        <button class="btn-hamburger" id="btnHamburger">
+            <i class="bi bi-list"></i>
+        </button>
+        <span class="topbar-title">🌿 Admin</span>
+        <div style="width:40px;"></div>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div style="display:flex;">
+
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <button class="sidebar-close" id="btnCloseSidebar">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+            <div class="sidebar-logo">
+                🌿 Chá da Iris
+                <span>Painel Administrativo</span>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="sidebar-section-label">Gestão</div>
+                <button class="sidebar-btn active" onclick="window.switchSection('convidados', this)">
+                    <i class="bi bi-people me-2"></i> Convidados
+                </button>
+                <button class="sidebar-btn" onclick="window.switchSection('lista-oficial', this)">
+                    <i class="bi bi-person-lines-fill me-2"></i> Lista de Convidados
+                </button>
+                <button class="sidebar-btn" onclick="window.switchSection('produtos', this)">
+                    <i class="bi bi-box me-2"></i> Produtos
+                </button>
+
+                <div class="sidebar-section-label">Personalizar</div>
+                <button class="sidebar-btn" onclick="window.switchSection('cards', this)">
+                    <i class="bi bi-palette me-2"></i> Editar Cards
+                </button>
+                <button class="sidebar-btn" onclick="window.switchSection('evento', this)">
+                    <i class="bi bi-calendar-heart me-2"></i> Evento
+                </button>
+                <button class="sidebar-btn" onclick="window.switchSection('iris', this)">
+                    <i class="bi bi-image me-2"></i> Foto da Iris
+                </button>
+
+                <div class="sidebar-divider"></div>
+
+                <button class="sidebar-btn sidebar-btn-danger" onclick="window.resetDB()">
+                    <i class="bi bi-arrow-counterclockwise me-2"></i> Zerar Tudo
+                </button>
+                <button class="sidebar-btn" onclick="window.logout()" style="color:var(--texto-claro);">
+                    <i class="bi bi-box-arrow-left me-2"></i> Sair
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="admin-content">
+
+            <div class="admin-header">
+                <div class="admin-header-left">
+                    <div class="section-ornament">✦ Floresta Encantada ✦</div>
+                    <h2>Painel Administrativo</h2>
+                    <p>Gerencie os conteúdos do Chá de Bebê da Iris</p>
+                </div>
+                <button class="btn-logout" onclick="window.logout()">
+                    <i class="bi bi-box-arrow-left me-1"></i> Sair
+                </button>
+            </div>
+
+            <!-- ═══════════ CONVIDADOS ═══════════ -->
+            <section class="section-admin active" id="convidados">
+                <div class="card-admin">
+                    <h4><i class="bi bi-people me-2"></i>Convidados Confirmados</h4>
+                    <div class="contador-box">
+                        <div class="contador-card">
+                            <h6>Total</h6>
+                            <div class="contador-num" id="total-convidados">0</div>
+                        </div>
+                        <div class="contador-card">
+                            <h6>Adultos</h6>
+                            <div class="contador-num" id="total-adultos">0</div>
+                        </div>
+                        <div class="contador-card">
+                            <h6>Crianças</h6>
+                            <div class="contador-num" id="total-criancas">0</div>
+                        </div>
+                    </div>
+                    <div id="lista-convidados"></div>
+                </div>
+            </section>
+
+            <!-- ═══════════ LISTA OFICIAL ═══════════ -->
+            <section class="section-admin" id="lista-oficial">
+                <div class="card-admin">
+                    <h4><i class="bi bi-person-lines-fill me-2"></i>Lista de Convidados Oficiais</h4>
+                    <p style="font-family:var(--font-corpo);color:var(--texto-medio);font-size:0.9rem;margin-bottom:20px;">
+                        Gerencie quem pode confirmar presença no site. Apenas nomes desta lista são aceitos no formulário.
+                    </p>
+                    <div id="alertaListaOficial" class="alert-msg"></div>
+
+                    <!-- Adicionar novo convidado -->
+                    <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;">
+                        <div class="form-group-admin" style="flex:1;min-width:200px;margin-bottom:0;">
+                            <label>Nome do novo convidado</label>
+                            <input type="text" id="novoConvidadoNome" placeholder="Ex: Maria Silva"
+                                onkeydown="if(event.key==='Enter') window.adicionarConvidadoOficial()">
+                        </div>
+                        <button class="btn-salvar" onclick="window.adicionarConvidadoOficial()" style="margin:0;white-space:nowrap;">
+                            <i class="bi bi-person-plus me-1"></i> Adicionar
+                        </button>
+                    </div>
+
+                    <hr style="border-color:rgba(74,124,89,0.2);margin:0 0 20px;">
+
+                    <p style="font-family:var(--font-label);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--verde-musgo);margin-bottom:14px;font-weight:700;">
+                        🌿 Convidados na lista: <span id="lista-oficial-total" style="color:var(--verde-floresta);">0</span>
+                    </p>
+
+                    <div id="lista-oficial-items"></div>
+                </div>
+            </section>
+
+            <!-- ═══════════ PRODUTOS ═══════════ -->
+            <section class="section-admin" id="produtos">
+                <div class="card-admin">
+                    <h4><i class="bi bi-box me-2"></i>Gerenciar Produtos</h4>
+                    <div id="alertaProduto" class="alert-msg"></div>
+                    <div style="margin-bottom:28px;">
+                        <p style="font-family:var(--font-label);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--verde-musgo);margin-bottom:14px;font-weight:700;">
+                            🌿 Adicionar Novo Produto
+                        </p>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:14px;">
+                            <div class="form-group-admin">
+                                <label>Nome</label>
+                                <input type="text" id="novoProdutoNome" placeholder="Ex: Fraldas P">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Estoque</label>
+                                <input type="number" id="novoProdutoEstoque" placeholder="5" min="0">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Emoji/Ícone</label>
+                                <input type="text" id="novoProdutoIcone" placeholder="🧷" maxlength="2">
+                            </div>
+                        </div>
+                        <button class="btn-salvar" onclick="window.adicionarProduto()">
+                            <i class="bi bi-plus-circle me-1"></i> Adicionar
+                        </button>
+                    </div>
+                    <hr style="border-color:rgba(74,124,89,0.2);margin:20px 0;">
+                    <p style="font-family:var(--font-label);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--verde-musgo);margin-bottom:14px;font-weight:700;">
+                        🎁 Produtos Existentes
+                    </p>
+                    <div id="lista-produtos"></div>
+                </div>
+            </section>
+
+            <!-- ═══════════ CARDS ═══════════ -->
+            <section class="section-admin" id="cards">
+                <div id="alertaCards" class="alert-msg"></div>
+
+                <div class="card-tabs">
+                    <button class="card-tab active" onclick="window.abrirTabCard(1, this)">🍃 Card 1 – Boas-vindas</button>
+                    <button class="card-tab" onclick="window.abrirTabCard(2, this)">🎁 Card 2 – Presentes</button>
+                    <button class="card-tab" onclick="window.abrirTabCard(3, this)">📅 Card 3 – Informações</button>
+                </div>
+
+                <!-- CARD 1 -->
+                <div class="card-tab-content active" id="tab-card1">
+                    <div class="card-editor-layout">
+                        <div class="card-editor-form card-admin">
+                            <h4><i class="bi bi-pencil-square me-2"></i>Editar Card 1 – Boas-vindas</h4>
+
+                            <div class="form-section-title">📝 Textos</div>
+                            <div class="form-group-admin">
+                                <label>Título principal</label>
+                                <input type="text" id="card1Titulo" placeholder="Ex: Chá de Fraldas" oninput="window.atualizarPreview(1)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Subtítulo</label>
+                                <input type="text" id="card1Subtitulo" placeholder="Ex: Olá, bem-vindos!" oninput="window.atualizarPreview(1)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Texto principal</label>
+                                <textarea id="card1Texto" rows="3" placeholder="Texto do card..." oninput="window.atualizarPreview(1)"></textarea>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Segundo parágrafo <span style="color:var(--texto-claro);font-weight:400">(opcional)</span></label>
+                                <textarea id="card1Texto2" rows="2" placeholder="Texto adicional..." oninput="window.atualizarPreview(1)"></textarea>
+                            </div>
+
+                            <div class="form-section-title">🎨 Visual</div>
+                            <div class="form-row-2col">
+                                <div class="form-group-admin">
+                                    <label>Cor do cabeçalho</label>
+                                    <input type="color" id="card1Cor" value="#2d5a3d" oninput="window.atualizarPreview(1)">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Cor secundária</label>
+                                    <input type="color" id="card1Cor2" value="#4a7c59" oninput="window.atualizarPreview(1)">
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Cor do texto do cabeçalho</label>
+                                <input type="color" id="card1CorTexto" value="#e8c96a" oninput="window.atualizarPreview(1)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Emoji / Ícone do ornamento</label>
+                                <div class="emoji-picker-row">
+                                    <input type="text" id="card1Emoji" placeholder="Ex: 💗" maxlength="4" oninput="window.atualizarPreview(1)">
+                                    <div class="emoji-sugestoes">
+                                        <span onclick="window.setEmoji(1,'💗')">💗</span>
+                                        <span onclick="window.setEmoji(1,'🍼')">🍼</span>
+                                        <span onclick="window.setEmoji(1,'👶')">👶</span>
+                                        <span onclick="window.setEmoji(1,'🌿')">🌿</span>
+                                        <span onclick="window.setEmoji(1,'✨')">✨</span>
+                                        <span onclick="window.setEmoji(1,'🍃')">🍃</span>
+                                        <span onclick="window.setEmoji(1,'⭐')">⭐</span>
+                                        <span onclick="window.setEmoji(1,'🌸')">🌸</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Ornamento decorativo</label>
+                                <select id="card1Ornamento" onchange="window.atualizarPreview(1)">
+                                    <option value="✦ ✦ ✦">✦ ✦ ✦ (estrelas)</option>
+                                    <option value="~ ~ ~">~ ~ ~ (ondas)</option>
+                                    <option value="· · ·">· · · (pontos)</option>
+                                    <option value="❋ ❋ ❋">❋ ❋ ❋ (florzinhas)</option>
+                                    <option value="♡ ♡ ♡">♡ ♡ ♡ (corações)</option>
+                                    <option value="✿ ✿ ✿">✿ ✿ ✿ (flores)</option>
+                                    <option value="◆ ◆ ◆">◆ ◆ ◆ (diamantes)</option>
+                                </select>
+                            </div>
+
+                            <button class="btn-salvar" onclick="window.salvarCard(1)">
+                                <i class="bi bi-cloud-check me-1"></i> Salvar Card 1
+                            </button>
+                        </div>
+
+                        <div class="card-preview-wrapper">
+                            <p class="preview-label">👁 Pré-visualização ao vivo</p>
+                            <div class="card-preview" id="preview1">
+                                <div class="preview-header" id="preview1-header">
+                                    <div class="preview-ornamento" id="preview1-ornamento">✦ ✦ ✦</div>
+                                    <div class="preview-titulo" id="preview1-titulo">Chá de Fraldas</div>
+                                    <div class="preview-ornamento" id="preview1-ornamento2">✦ ✦ ✦</div>
+                                </div>
+                                <div class="preview-body">
+                                    <div class="preview-subtitulo" id="preview1-subtitulo"></div>
+                                    <div class="preview-divisor" id="preview1-divisor">💗 Queridos amigos e familiares 💗</div>
+                                    <div class="preview-texto" id="preview1-texto"></div>
+                                    <div class="preview-texto2" id="preview1-texto2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2 -->
+                <div class="card-tab-content" id="tab-card2">
+                    <div class="card-editor-layout">
+                        <div class="card-editor-form card-admin">
+                            <h4><i class="bi bi-pencil-square me-2"></i>Editar Card 2 – Presentes</h4>
+
+                            <div class="form-section-title">📝 Textos</div>
+                            <div class="form-group-admin">
+                                <label>Título principal</label>
+                                <input type="text" id="card2Titulo" placeholder="Ex: Lista de Presentes" oninput="window.atualizarPreview(2)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Subtítulo</label>
+                                <input type="text" id="card2Subtitulo" placeholder="Ex: Escolha com carinho!" oninput="window.atualizarPreview(2)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Texto principal</label>
+                                <textarea id="card2Texto" rows="3" placeholder="Texto do card..." oninput="window.atualizarPreview(2)"></textarea>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Segundo parágrafo <span style="color:var(--texto-claro);font-weight:400">(opcional)</span></label>
+                                <textarea id="card2Texto2" rows="2" placeholder="Texto adicional..." oninput="window.atualizarPreview(2)"></textarea>
+                            </div>
+
+                            <div class="form-section-title">🎨 Visual</div>
+                            <div class="form-row-2col">
+                                <div class="form-group-admin">
+                                    <label>Cor do cabeçalho</label>
+                                    <input type="color" id="card2Cor" value="#4a7c59" oninput="window.atualizarPreview(2)">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Cor secundária</label>
+                                    <input type="color" id="card2Cor2" value="#6aaa7a" oninput="window.atualizarPreview(2)">
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Cor do texto do cabeçalho</label>
+                                <input type="color" id="card2CorTexto" value="#e8c96a" oninput="window.atualizarPreview(2)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Emoji / Ícone do ornamento</label>
+                                <div class="emoji-picker-row">
+                                    <input type="text" id="card2Emoji" placeholder="Ex: 🎁" maxlength="4" oninput="window.atualizarPreview(2)">
+                                    <div class="emoji-sugestoes">
+                                        <span onclick="window.setEmoji(2,'🎁')">🎁</span>
+                                        <span onclick="window.setEmoji(2,'🛍️')">🛍️</span>
+                                        <span onclick="window.setEmoji(2,'💝')">💝</span>
+                                        <span onclick="window.setEmoji(2,'🎀')">🎀</span>
+                                        <span onclick="window.setEmoji(2,'✨')">✨</span>
+                                        <span onclick="window.setEmoji(2,'🌿')">🌿</span>
+                                        <span onclick="window.setEmoji(2,'⭐')">⭐</span>
+                                        <span onclick="window.setEmoji(2,'🍃')">🍃</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Ornamento decorativo</label>
+                                <select id="card2Ornamento" onchange="window.atualizarPreview(2)">
+                                    <option value="✦ ✦ ✦">✦ ✦ ✦ (estrelas)</option>
+                                    <option value="~ ~ ~">~ ~ ~ (ondas)</option>
+                                    <option value="· · ·">· · · (pontos)</option>
+                                    <option value="❋ ❋ ❋">❋ ❋ ❋ (florzinhas)</option>
+                                    <option value="♡ ♡ ♡">♡ ♡ ♡ (corações)</option>
+                                    <option value="✿ ✿ ✿">✿ ✿ ✿ (flores)</option>
+                                    <option value="◆ ◆ ◆">◆ ◆ ◆ (diamantes)</option>
+                                </select>
+                            </div>
+
+                            <button class="btn-salvar" onclick="window.salvarCard(2)">
+                                <i class="bi bi-cloud-check me-1"></i> Salvar Card 2
+                            </button>
+                        </div>
+
+                        <div class="card-preview-wrapper">
+                            <p class="preview-label">👁 Pré-visualização ao vivo</p>
+                            <div class="card-preview" id="preview2">
+                                <div class="preview-header" id="preview2-header">
+                                    <div class="preview-ornamento" id="preview2-ornamento">✦ ✦ ✦</div>
+                                    <div class="preview-titulo" id="preview2-titulo">Lista de Presentes</div>
+                                    <div class="preview-ornamento" id="preview2-ornamento2">✦ ✦ ✦</div>
+                                </div>
+                                <div class="preview-body">
+                                    <div class="preview-subtitulo" id="preview2-subtitulo"></div>
+                                    <div class="preview-divisor" id="preview2-divisor">🎁 Presentes com amor 🎁</div>
+                                    <div class="preview-texto" id="preview2-texto"></div>
+                                    <div class="preview-texto2" id="preview2-texto2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3 -->
+                <div class="card-tab-content" id="tab-card3">
+                    <div class="card-editor-layout">
+                        <div class="card-editor-form card-admin">
+                            <h4><i class="bi bi-pencil-square me-2"></i>Editar Card 3 – Informações</h4>
+
+                            <div class="form-section-title">📝 Textos</div>
+                            <div class="form-group-admin">
+                                <label>Título principal</label>
+                                <input type="text" id="card3Titulo" placeholder="Ex: Informações do Evento" oninput="window.atualizarPreview(3)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Subtítulo</label>
+                                <input type="text" id="card3Subtitulo" placeholder="Ex: Saiba tudo sobre o evento!" oninput="window.atualizarPreview(3)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Texto principal</label>
+                                <textarea id="card3Texto" rows="3" placeholder="Texto do card..." oninput="window.atualizarPreview(3)"></textarea>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Segundo parágrafo <span style="color:var(--texto-claro);font-weight:400">(opcional)</span></label>
+                                <textarea id="card3Texto2" rows="2" placeholder="Texto adicional..." oninput="window.atualizarPreview(3)"></textarea>
+                            </div>
+
+                            <div class="form-section-title">🎨 Visual</div>
+                            <div class="form-row-2col">
+                                <div class="form-group-admin">
+                                    <label>Cor do cabeçalho</label>
+                                    <input type="color" id="card3Cor" value="#2d5a3d" oninput="window.atualizarPreview(3)">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label>Cor secundária</label>
+                                    <input type="color" id="card3Cor2" value="#4a7c59" oninput="window.atualizarPreview(3)">
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Cor do texto do cabeçalho</label>
+                                <input type="color" id="card3CorTexto" value="#e8c96a" oninput="window.atualizarPreview(3)">
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Emoji / Ícone do ornamento</label>
+                                <div class="emoji-picker-row">
+                                    <input type="text" id="card3Emoji" placeholder="Ex: 📅" maxlength="4" oninput="window.atualizarPreview(3)">
+                                    <div class="emoji-sugestoes">
+                                        <span onclick="window.setEmoji(3,'📅')">📅</span>
+                                        <span onclick="window.setEmoji(3,'📍')">📍</span>
+                                        <span onclick="window.setEmoji(3,'🎉')">🎉</span>
+                                        <span onclick="window.setEmoji(3,'🥳')">🥳</span>
+                                        <span onclick="window.setEmoji(3,'✨')">✨</span>
+                                        <span onclick="window.setEmoji(3,'🌿')">🌿</span>
+                                        <span onclick="window.setEmoji(3,'⭐')">⭐</span>
+                                        <span onclick="window.setEmoji(3,'🍃')">🍃</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>Ornamento decorativo</label>
+                                <select id="card3Ornamento" onchange="window.atualizarPreview(3)">
+                                    <option value="✦ ✦ ✦">✦ ✦ ✦ (estrelas)</option>
+                                    <option value="~ ~ ~">~ ~ ~ (ondas)</option>
+                                    <option value="· · ·">· · · (pontos)</option>
+                                    <option value="❋ ❋ ❋">❋ ❋ ❋ (florzinhas)</option>
+                                    <option value="♡ ♡ ♡">♡ ♡ ♡ (corações)</option>
+                                    <option value="✿ ✿ ✿">✿ ✿ ✿ (flores)</option>
+                                    <option value="◆ ◆ ◆">◆ ◆ ◆ (diamantes)</option>
+                                </select>
+                            </div>
+
+                            <button class="btn-salvar" onclick="window.salvarCard(3)">
+                                <i class="bi bi-cloud-check me-1"></i> Salvar Card 3
+                            </button>
+                        </div>
+
+                        <div class="card-preview-wrapper">
+                            <p class="preview-label">👁 Pré-visualização ao vivo</p>
+                            <div class="card-preview" id="preview3">
+                                <div class="preview-header" id="preview3-header">
+                                    <div class="preview-ornamento" id="preview3-ornamento">✦ ✦ ✦</div>
+                                    <div class="preview-titulo" id="preview3-titulo">Informações do Evento</div>
+                                    <div class="preview-ornamento" id="preview3-ornamento2">✦ ✦ ✦</div>
+                                </div>
+                                <div class="preview-body">
+                                    <div class="preview-subtitulo" id="preview3-subtitulo"></div>
+                                    <div class="preview-divisor" id="preview3-divisor">📅 Detalhes do evento 📅</div>
+                                    <div class="preview-texto" id="preview3-texto"></div>
+                                    <div class="preview-texto2" id="preview3-texto2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ═══════════ EVENTO ═══════════ -->
+            <section class="section-admin" id="evento">
+                <div class="card-admin">
+                    <h4><i class="bi bi-calendar-heart me-2"></i>Informações do Evento</h4>
+                    <div id="alertaEvento" class="alert-msg"></div>
+                    <div style="max-width:480px;">
+                        <div class="form-group-admin">
+                            <label>Data do Evento</label>
+                            <input type="date" id="eventoData">
+                        </div>
+                        <div class="form-group-admin">
+                            <label>Horário</label>
+                            <input type="time" id="eventoHora">
+                        </div>
+                        <div class="form-group-admin">
+                            <label>Texto da Data (exibição)</label>
+                            <input type="text" id="eventoTexto" placeholder="Ex: Domingo, 25 de Julho de 2026">
+                        </div>
+                        <button class="btn-salvar" onclick="window.salvarEvento()">
+                            <i class="bi bi-check-circle me-1"></i> Salvar Evento
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════ FOTO IRIS ═══════════ -->
+            <section class="section-admin" id="iris">
+                <div class="card-admin">
+                    <h4><i class="bi bi-image me-2"></i>Foto da Iris</h4>
+                    <div id="alertaIris" class="alert-msg"></div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;max-width:860px;">
+
+                        <!-- Coluna esquerda: controles -->
+                        <div>
+                            <!-- Upload de arquivo -->
+                            <div class="form-section-title" style="margin-top:0;">📁 Enviar do computador</div>
+                            <div id="dropzone-iris">
+                                <input type="file" id="irisFile" accept="image/*" style="display:none;">
+                                <div class="iris-dropzone" id="dropzoneArea" onclick="document.getElementById('irisFile').click()">
+                                    <div class="dropzone-icon">🌿</div>
+                                    <p class="dropzone-title">Clique ou arraste uma foto aqui</p>
+                                    <p class="dropzone-sub">JPG, PNG, WEBP — até 4 MB</p>
+                                </div>
+                            </div>
+
+                            <!-- Separador -->
+                            <div style="display:flex;align-items:center;gap:12px;margin:20px 0;">
+                                <div style="flex:1;height:1px;background:rgba(74,124,89,0.2);"></div>
+                                <span style="font-family:var(--font-label);font-size:0.68rem;letter-spacing:0.1em;color:var(--texto-claro);text-transform:uppercase;">ou cole uma URL</span>
+                                <div style="flex:1;height:1px;background:rgba(74,124,89,0.2);"></div>
+                            </div>
+
+                            <!-- URL manual -->
+                            <div class="form-group-admin" style="margin-bottom:20px;">
+                                <label>URL da imagem</label>
+                                <input type="text" id="irisUrl" placeholder="https://exemplo.com/foto.jpg">
+                            </div>
+
+                            <button class="btn-salvar" id="btnSalvarIris" onclick="window.salvarIris()">
+                                <i class="bi bi-cloud-upload me-1"></i> Salvar Foto
+                            </button>
+                        </div>
+
+                        <!-- Coluna direita: preview -->
+                        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+                            <p style="font-family:var(--font-label);font-size:0.65rem;font-weight:700;color:var(--texto-claro);text-transform:uppercase;letter-spacing:0.1em;margin:0;">
+                                👁 Pré-visualização
+                            </p>
+                            <div class="iris-preview-ring">
+                                <img id="previewIris" src="" alt="Preview da Iris" onerror="this.src=''" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">
+                                <div class="iris-preview-placeholder" id="irisPlaceholder">
+                                    <span style="font-size:3rem;">🌿</span>
+                                    <span style="font-family:var(--font-label);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--texto-claro);margin-top:8px;">Sem foto</span>
+                                </div>
+                            </div>
+                            <p id="irisFileName" style="font-size:0.8rem;color:var(--texto-claro);font-family:var(--font-corpo);text-align:center;"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- MENU HAMBURGUER -->
+    <script>
+        const sidebar  = document.getElementById('adminSidebar');
+        const overlay  = document.getElementById('sidebarOverlay');
+        const btnOpen  = document.getElementById('btnHamburger');
+        const btnClose = document.getElementById('btnCloseSidebar');
+
+        function abrirSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        function fecharSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        btnOpen.addEventListener('click', abrirSidebar);
+        btnClose.addEventListener('click', fecharSidebar);
+        overlay.addEventListener('click', fecharSidebar);
+
+        document.querySelectorAll('.sidebar-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (window.innerWidth <= 768) fecharSidebar();
+            });
+        });
+    </script>
+
+    <!-- UPLOAD DE IMAGEM IRIS -->
+    <script>
+        // Base64 pendente (set pelo file input ou drop)
+        window._irisBase64Pending = null;
+
+        function setIrisPreview(src, label) {
+            const img = document.getElementById('previewIris');
+            const placeholder = document.getElementById('irisPlaceholder');
+            const fileName = document.getElementById('irisFileName');
+            if (src) {
+                img.src = src;
+                placeholder.classList.add('hidden');
+            } else {
+                img.src = '';
+                placeholder.classList.remove('hidden');
+            }
+            if (fileName) fileName.textContent = label || '';
+        }
+
+        function processFile(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                alert('❌ Selecione um arquivo de imagem válido (JPG, PNG, WEBP).');
+                return;
+            }
+            if (file.size > 4 * 1024 * 1024) {
+                alert('❌ A imagem deve ter no máximo 4 MB.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                window._irisBase64Pending = base64;
+                document.getElementById('irisUrl').value = '';
+                setIrisPreview(base64, file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // File input
+        document.getElementById('irisFile').addEventListener('change', (e) => {
+            processFile(e.target.files[0]);
+        });
+
+        // Drag & drop
+        const dropzone = document.getElementById('dropzoneArea');
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+            processFile(e.dataTransfer.files[0]);
+        });
+
+        // URL input → preview
+        document.getElementById('irisUrl').addEventListener('input', (e) => {
+            const url = e.target.value.trim();
+            window._irisBase64Pending = null;
+            setIrisPreview(url || null, url ? 'URL externa' : '');
+        });
+    </script>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
